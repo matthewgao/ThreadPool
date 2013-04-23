@@ -4,13 +4,12 @@
   
 ThreadPool::ThreadPool(){
   init();
-
-
 }
+
 ThreadPool:: ~ThreadPool(){
   destoryPool();
-
 }
+
 void ThreadPool::init(){
   pthread_mutex_init(&mtx,NULL);
   pthread_cond_init(&cond,NULL);
