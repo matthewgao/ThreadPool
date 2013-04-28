@@ -4,9 +4,7 @@
 
 void *run(void *arg){
   int *num=(int*)arg;
-  //sleep(*num);
   printf("Thread is %x,  Num %d \n",pthread_self(),*num);
-  //  sleep(5);
 }
 
 int main(){

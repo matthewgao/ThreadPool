@@ -21,6 +21,11 @@ void ThreadPool::init(){
   jq_rear=NULL;
   
   thread=(pthread_t*)malloc(sizeof(pthread_t)*max_thread_num);
+
+  if(NULL==thread){
+    printf("Create threads fail\n");
+    return;
+  }
   for(int i=0;i<max_thread_num;i++){
     pthread_create(&(thread[i]),NULL,
 		   thread_routine,
