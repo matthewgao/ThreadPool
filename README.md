@@ -31,6 +31,7 @@ int main(){
   tp->startAll();
   sleep(5);
   delete tp;
+  free(num);
   
   return 0;
 }
