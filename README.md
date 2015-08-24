@@ -16,6 +16,7 @@ Very easy to compile it, just make.
 Example
 ==========
 
+~~~
 void *run(void *arg);
 
 int main(){
@@ -39,3 +40,4 @@ void *run(void *arg){
   int *num=(int*)arg;
   printf("Thread is %x,  Num %d \n",pthread_self(),*num);
 }
+~~~
