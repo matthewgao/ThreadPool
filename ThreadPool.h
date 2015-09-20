@@ -1,3 +1,6 @@
+#ifndef THREADPOOL
+#define THREADPOOL
+
 #include <pthread.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -45,3 +48,4 @@ class ThreadPool{
     void setJobQuene(JobQuene *);
 
 };
+#endif
