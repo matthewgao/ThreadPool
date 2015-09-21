@@ -25,5 +25,5 @@ $(TEST_TARGET) : $(TEST_OBJS)
 	$(CC) -c $< -o $@ $(BOOST_LIB)
 
 clean:
-	rm -f *.o main
+	rm -f *.o $(TARGET) $(TEST_TARGET)
 	echo "Remove Done"

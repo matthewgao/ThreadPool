@@ -13,6 +13,10 @@
 #include <vector>
 #include "job.h"
 
+/*
+ * shared_ptr now is a part of C++11, so you can use it 
+ * directly with std::shared_ptr
+ */
 typedef std::vector<boost::shared_ptr<Job> > JobList;
 
 class Queue{
