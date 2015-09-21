@@ -20,7 +20,7 @@ class Queue{
     static Queue* getInstance();
     bool addJob(boost::shared_ptr<Job>& job);
     bool isEmpty();
-    boost::shared_ptr<Job>& popJob();
+    boost::shared_ptr<Job> popJob();
 
   private:
     Queue(){

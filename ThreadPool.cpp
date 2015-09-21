@@ -1,6 +1,8 @@
 #include "ThreadPool.h"
+#include <iostream>
+
+using namespace std;
  
-//extern "C" void thread_routine(void*);
   
 ThreadPool::ThreadPool(){
     init();
@@ -18,9 +20,6 @@ void ThreadPool::init()
 
     shutdown = false;
     max_thread_num = 10;
-    max_quene_num = 10;
-    jq_head = NULL;
-    jq_rear = NULL;
     
     thread = (pthread_t*)malloc(sizeof(pthread_t)*max_thread_num);
 
@@ -35,10 +34,6 @@ void ThreadPool::init()
 
 }
 
-//void *thread_routine(void *delegate){
-//  return reinterpret_cast<ThreadPool*>(delegate)->thread_routine();
-//}
-
 //this is a member function, pthread_create can not use a member 
 //function Not EVEN a static one.
 void *thread_routine(void *arg)
@@ -47,12 +42,10 @@ void *thread_routine(void *arg)
     pthread_mutex_t *mtx;
     pthread_cond_t *cond;
     bool *shutdown;
-    JobQuene *jq_head;
 
     mtx = tpool->getMutex();
     cond = tpool->getCond();
     shutdown = tpool->shouldShutdown();
-    jq_head = tpool->getJobQuene();
 
     if(debuglevel >= 2){
         printf("Thread is %x, The cond is %x\n", pthread_self(), cond);
@@ -60,39 +53,41 @@ void *thread_routine(void *arg)
         printf("Thread is %x, Tpool is %x\n", pthread_self(), tpool);
     }
 
-    JobQuene *pos = jq_head;
+    Queue* jobQueue = Queue::getInstance();
+    
     printf("thread_routine\n");
     while(false == (*shutdown)){
+
         pthread_mutex_lock(mtx);
-        while((tpool->getJobQuene() == NULL) && (!(*shutdown))){
-            if(debuglevel >= 2){
+        
+        while(jobQueue->isEmpty() && (!*shutdown)){
+            if(debuglevel >= 0){
                 printf("%x loop again \n",pthread_self());
             }
-
+        
             pthread_cond_wait(cond, mtx);
-            
-            if(debuglevel >= 1){
-                printf("!!!Thread is %x, jobhead is %x\n", pthread_self(), 
-                        tpool->getJobQuene());
-            }
-        }
-        //should be aware that the jobquene pointer should be update when 
-        //the data has been updated, because the two pointer is different
-        //variable, it should be synconized.
-        pos = tpool->getJobQuene();
+        }     
+        
+        boost::shared_ptr<Job> job = jobQueue->popJob();
         if(*shutdown == true){	
             pthread_mutex_unlock(mtx);
             pthread_exit(NULL);
         }
-        if(debuglevel >= 1)
+        if(debuglevel >= 1){
             printf("%x is Runing\n", pthread_self());
-      
-        jq_head = pos->next;
-        tpool->setJobQuene(jq_head);
+        }      
+        
         pthread_mutex_unlock(mtx);
-        (*(pos->process))(pos->arg);
-        free(pos);
-        pos = jq_head;
+        
+        if(NULL == job){
+            cout<<"Job is NULL"<<endl;
+            continue;
+        }
+        if(debuglevel >= 0){
+            printf("Got a Job, Thread is %x,\n", pthread_self());
+        }
+
+        job->process();
       
         if(debuglevel >= 1){
             printf("%x is exiting\n", pthread_self());
@@ -102,27 +97,6 @@ void *thread_routine(void *arg)
     pthread_exit(NULL);
 }
 
-void ThreadPool::addJob(void *(*process)(void *arg), void *arg)
-{
- 
-    JobQuene *newJob = (JobQuene*)malloc(sizeof(JobQuene));
-    newJob->process = process;
-    newJob->arg = arg;
-    newJob->next = NULL;
-
-    pthread_mutex_lock(&mtx);
-    if(NULL == jq_head){
-      jq_head = newJob;
-      jq_rear = jq_head;
-    }
-
-    jq_rear->next = newJob;
-    jq_rear = newJob;
-    pthread_mutex_unlock(&mtx);
-    if(debuglevel >= 1){
-      printf("Add Job finished\n");
-    }   
-}
 
 void ThreadPool::setMaxThread(int num)
 {
@@ -149,24 +123,9 @@ void ThreadPool::destoryPool()
         printf("free thread pool\n");
     }
     
-    while(jq_head != NULL){
-        JobQuene *tmp = jq_head;
-        jq_head = jq_head->next;
-        free(tmp);
-        if(debuglevel >= 1){
-            printf("freeing\n");
-        }
-    }
-
-    if(debuglevel >= 1){
-        printf("free job quene\n");
-    }
     pthread_mutex_destroy(&mtx);
     pthread_cond_destroy(&cond);
 
-}
-void ThreadPool::setMaxQuene(int num){
-   this->max_quene_num = num;
 }
 
 pthread_mutex_t* ThreadPool::getMutex(){
@@ -178,9 +137,6 @@ pthread_cond_t* ThreadPool::getCond(){
 bool *ThreadPool::shouldShutdown(){
    return &shutdown;
 }
-JobQuene *ThreadPool::getJobQuene(){
-   return jq_head;
-}
 
 void ThreadPool::start(){
    pthread_cond_signal(&cond);
@@ -188,10 +144,4 @@ void ThreadPool::start(){
 
 void ThreadPool::startAll(){
     pthread_cond_broadcast(&cond);
-}
-
-void ThreadPool::setJobQuene(JobQuene *jq)
-{
-    jq_head = jq;
-
 }
