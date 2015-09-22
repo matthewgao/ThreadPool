@@ -4,6 +4,13 @@ ThreadPool
 
 A Linux environment ThreadPool
 
+##TODO LIST
+* 动态库
+* Logger
+* shutdown gracefully
+* 
+
+
 UserGuide
 ==========
 The default thread number is 10, if you want to increase number call setMaxThread().

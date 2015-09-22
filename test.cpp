@@ -67,5 +67,11 @@ int main(){
     cout<<"----------"<<endl;
     q->popJob();
     cout<< j.use_count() << endl;
+
+    boost::shared_ptr<Job> tmp = q->popJob();
+    if(tmp == NULL){
+        cout<<"can not get anything"<<endl;
+    }
+
     return 0;
 }

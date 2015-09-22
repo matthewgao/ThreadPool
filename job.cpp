@@ -22,7 +22,7 @@ Job::~Job(){
 
 void Job::process(){
     //abort();
-    cout<<"job process"<<endl;
+    cout<<"job process "<<name<<endl;
 }
 
 void Job::setArgs(void* args){
