@@ -37,10 +37,10 @@ T* Singleton<T>::obj = NULL;
 
 
 
-int main(){
-    int* i = Singleton<int>::getInstance();
-    cout<<i<<endl;
-    int* j = Singleton<int>::getInstance();
-    cout<<j<<endl;
-    return 0;
-}
+/*int main(){*/
+    //int* i = Singleton<int>::getInstance();
+    //cout<<i<<endl;
+    //int* j = Singleton<int>::getInstance();
+    //cout<<j<<endl;
+    //return 0;
+/*}*/

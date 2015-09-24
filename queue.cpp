@@ -10,26 +10,15 @@
 
 using namespace std;
 
-Queue* Queue::self = NULL;
-
-Queue* Queue::getInstance(){
-    if(NULL == self){
-        self = new Queue();
-    }
-    return self;
-}
-
 bool Queue::addJob(boost::shared_ptr<Job>& job){
-    lock();
+    MutexGuard lock(mtx);
     list.push_back(job);    
-    unlock();
     return true;
 }
 
 bool Queue::isEmpty(){
-    lock();
+    MutexGuard lock(mtx);
     bool isEmpty = list.empty();
-    unlock();
     return isEmpty;
 }
 
@@ -42,13 +31,12 @@ boost::shared_ptr<Job> Queue::popJob(){
         cout<<"popJob: Empty list"<<endl;
         return boost::shared_ptr<Job>();
     }
-    lock();
+    MutexGuard lock(mtx);
     //back() front()返回的是引用,这里做了一个转换,相当于用引用复制给了一个
     //新的变量tmp,引用计数+1
     boost::shared_ptr<Job> tmp = list.back();
     cout<<"Popjob "<<tmp.use_count()<<endl;
     list.pop_back(); 
     cout<<"After Popjob "<<tmp.use_count()<<endl;
-    unlock();
     return tmp;
 }

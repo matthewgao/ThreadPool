@@ -9,6 +9,7 @@
 using namespace std;
 #include "job.h"
 #include "queue.h"
+#include "singleton.h"
 #include <boost/make_shared.hpp>
 
 void func(boost::shared_ptr<Job> j){
@@ -36,9 +37,9 @@ int main(){
     if(x == NULL)
         cout<< "its null"<<endl;
 
-    Queue* q = Queue::getInstance();
+    Queue* q = Singleton<Queue>::getInstance();
     cout<< q <<endl;
-    q = Queue::getInstance();
+    q = Singleton<Queue>::getInstance();
     cout<< q <<endl;
 
     boost::shared_ptr<Job> j = boost::make_shared<Job>();

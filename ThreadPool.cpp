@@ -1,5 +1,6 @@
 #include "ThreadPool.h"
 #include <iostream>
+#include "singleton.h"
 
 using namespace std;
  
@@ -15,7 +16,6 @@ ThreadPool:: ~ThreadPool(){
 void ThreadPool::init()
 {
     
-    pthread_mutex_init(&mtx, NULL);
     pthread_cond_init(&cond, NULL);
 
     shutdown = false;
@@ -39,7 +39,7 @@ void ThreadPool::init()
 void *thread_routine(void *arg)
 {
     ThreadPool *tpool = (ThreadPool*)arg;
-    pthread_mutex_t *mtx;
+    MutexLock* mtx;
     pthread_cond_t *cond;
     bool *shutdown;
 
@@ -53,32 +53,34 @@ void *thread_routine(void *arg)
         printf("Thread is %x, Tpool is %x\n", pthread_self(), tpool);
     }
 
-    Queue* jobQueue = Queue::getInstance();
+    Queue* jobQueue = Singleton<Queue>::getInstance();
     
     printf("thread_routine\n");
     while(false == (*shutdown)){
 
-        pthread_mutex_lock(mtx);
-        
-        while(jobQueue->isEmpty() && (!*shutdown)){
-            if(debuglevel >= 0){
-                printf("%x loop again \n",pthread_self());
-            }
-        
-            pthread_cond_wait(cond, mtx);
-        }     
-        
+        {
+            MutexGuard lock(*mtx);
+            
+            while(jobQueue->isEmpty() && (!*shutdown)){
+                if(debuglevel >= 0){
+                    printf("%x loop again \n",pthread_self());
+                }
+            
+                pthread_cond_wait(cond, mtx->getRawMutexPtr());
+            }     
+        }   
+        /*
+         * Because this jobQueue is thread safe, so we don't need to 
+         * protect it with another mutex
+         */
         boost::shared_ptr<Job> job = jobQueue->popJob();
         if(*shutdown == true){	
-            pthread_mutex_unlock(mtx);
             pthread_exit(NULL);
         }
         if(debuglevel >= 1){
             printf("%x is Runing\n", pthread_self());
         }      
-        
-        pthread_mutex_unlock(mtx);
-        
+
         if(NULL == job){
             cout<<"Job is NULL"<<endl;
             continue;
@@ -123,12 +125,11 @@ void ThreadPool::destoryPool()
         printf("free thread pool\n");
     }
     
-    pthread_mutex_destroy(&mtx);
     pthread_cond_destroy(&cond);
 
 }
 
-pthread_mutex_t* ThreadPool::getMutex(){
+MutexLock* ThreadPool::getMutex(){
    return &mtx;
 }
 pthread_cond_t* ThreadPool::getCond(){

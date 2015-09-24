@@ -11,7 +11,7 @@ TEST_OBJS=queue.o \
 OBJS=ThreadPool.o \
 	 main.o \
 	 queue.o \
-	 job.o
+	 job.o 
 
 all : $(TARGET) $(TEST_TARGET)
 	echo "ALL Done"

@@ -7,18 +7,20 @@
 #include <boost/shared_ptr.hpp>
 #include <stdlib.h>
 #include "queue.h"
-
+#include "MutexLock.h"
 
 static int debuglevel = 0; //0 means no debug info
 
 void *thread_routine(void*);
+
+class MutexLock;
 
 class ThreadPool{
 
   private:
     bool shutdown;
     int max_thread_num;
-    pthread_mutex_t mtx;
+    MutexLock mtx;
     pthread_cond_t cond;
     pthread_t *thread;
     void init();
@@ -33,7 +35,7 @@ class ThreadPool{
     void startAll();
     void setMaxThread(int);
     void destoryPool();
-    pthread_mutex_t* getMutex();
+    MutexLock* getMutex();
     pthread_cond_t* getCond();
     bool *shouldShutdown();
 };

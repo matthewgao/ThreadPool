@@ -2,6 +2,9 @@
 #include <unistd.h>  //for sleeping
 #include "queue.h"
 #include <boost/make_shared.hpp>
+#include "singleton.h"
+#include <iostream>
+#include <sstream>
 
 void *run(void *arg){
     int *num = (int*)arg;
@@ -9,15 +12,20 @@ void *run(void *arg){
 }
 
 int main(){
-    Queue* q = Queue::getInstance();
+    Queue* q = Singleton<Queue>::getInstance();
     ThreadPool *tp = new ThreadPool();
-    /*int *num = (int*)malloc(sizeof(int)*19);*/
     
-    //for(int i = 0; i<19; i++){
-        //num[i] = i;
-        //tp->addJob(run, &num[i]);
-        ////tp->start();
-    /*}*/
+    int i;
+    for(i = 100; i<10000; i++){
+        std::stringstream ss;
+        ss<<i<<endl;
+        
+        boost::shared_ptr<Job> j1 = boost::make_shared<Job>();
+        j1->setName(ss.str());
+        cout<<ss.str()<<endl;
+        q->addJob(j1);
+    }
+
     boost::shared_ptr<Job> j1 = boost::make_shared<Job>();
     j1->setName("AA");
     

@@ -7,7 +7,7 @@
 
 #ifndef _JOB_H
 #define _JOB_H
-
+#include <iostream>
 //template<class T>
 class Job{
   public:
@@ -15,8 +15,8 @@ class Job{
     virtual ~Job();
     virtual void process();
     virtual void setArgs(void* args);
-    void setName(const char* c){
-        name = c;
+    void setName(std::string s){
+        name = s;
     }
 
   protected:
@@ -24,7 +24,7 @@ class Job{
   
   private:
     void* args;
-    const char* name;
+    std::string name;
 };
 
 #endif
