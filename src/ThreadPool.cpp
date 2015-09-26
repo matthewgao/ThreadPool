@@ -115,6 +115,9 @@ void ThreadPool::destoryPool()
     if(thread != NULL){
         for(int i = 0; i < max_thread_num; i++)
         {
+            /*
+             * pthread_join will wait for the thread if it haven't exited.
+             */
             pthread_join(thread[i], NULL);
         }
         free(thread);

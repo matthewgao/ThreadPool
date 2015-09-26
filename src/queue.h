@@ -10,14 +10,14 @@
 
 #include <pthread.h>
 #include <boost/shared_ptr.hpp>
-#include <vector>
+#include <list>
 #include "job.h"
 #include "MutexLock.h"
 /*
  * shared_ptr now is a part of C++11, so you can use it 
  * directly with std::shared_ptr
  */
-typedef std::vector<boost::shared_ptr<Job> > JobList;
+typedef std::list<boost::shared_ptr<Job> > JobList;
 
 class Queue{
   public:
@@ -25,8 +25,8 @@ class Queue{
     bool isEmpty();
     boost::shared_ptr<Job> popJob();
 
-    Queue(){}
-    ~Queue(){}
+    Queue();
+    ~Queue();
 
   private:
     JobList list;

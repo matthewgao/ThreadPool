@@ -6,9 +6,12 @@
 #include <iostream>
 #include <sstream>
 
-void *run(void *arg){
-    int *num = (int*)arg;
-    printf("Thread is %x,  Num %d \n", pthread_self(), *num);
+/*void *run(void *arg){*/
+    //int *num = (int*)arg;
+    //printf("Thread is %x,  Num %d \n", pthread_self(), *num);
+/*}*/
+void shutdown(ThreadPool* tp){
+    tp->destoryPool();
 }
 
 int main(){
@@ -16,7 +19,7 @@ int main(){
     ThreadPool *tp = new ThreadPool();
     
     int i;
-    for(i = 100; i<10000; i++){
+    for(i = 100; i<110; i++){
         std::stringstream ss;
         ss<<i<<endl;
         
@@ -39,12 +42,13 @@ int main(){
     tp->startAll();
     //tp->start();
 
-    sleep(1);
+    //sleep(1);
     j1 = boost::shared_ptr<Job>();
     j2 = boost::shared_ptr<Job>();
 
     sleep(1000);
     //tp->destoryPool();
+    //pthread_exit(NULL);
     delete tp;
   
     return 0;

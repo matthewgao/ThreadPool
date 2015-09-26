@@ -1,5 +1,5 @@
 CC=g++
-CFLAG= -g -Wall
+CFLAG= -g -Wall -std=c++11
 LPTHREAD= -lpthread
 BOOST_LIB=-I/usr/local/Cellar/boost/1.58.0/include 
 

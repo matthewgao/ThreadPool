@@ -10,6 +10,13 @@
 
 using namespace std;
 
+Queue::Queue(){}
+
+Queue::~Queue(){
+    MutexGuard lock(mtx);
+    list.clear();
+}
+
 bool Queue::addJob(boost::shared_ptr<Job>& job){
     MutexGuard lock(mtx);
     list.push_back(job);    
@@ -34,9 +41,9 @@ boost::shared_ptr<Job> Queue::popJob(){
     MutexGuard lock(mtx);
     //back() front()返回的是引用,这里做了一个转换,相当于用引用复制给了一个
     //新的变量tmp,引用计数+1
-    boost::shared_ptr<Job> tmp = list.back();
+    boost::shared_ptr<Job> tmp = list.front();
     cout<<"Popjob "<<tmp.use_count()<<endl;
-    list.pop_back(); 
+    list.pop_front(); 
     cout<<"After Popjob "<<tmp.use_count()<<endl;
     return tmp;
 }
