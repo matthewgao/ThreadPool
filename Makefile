@@ -1,9 +1,10 @@
 CC=g++
-#CFLAG= -g -Wall -std=c++11 -DBOOST_LOG_DYN_LINK
-CFLAG= -g -Wall  
+CFLAG= -g -Wall -std=c++11 -DBOOST_LOG_DYN_LINK
+#CFLAG= -g -Wall  
 LPTHREAD= -lpthread
 BOOST_LIB=-I/usr/local/Cellar/boost/1.58.0/include \
-		  -L/usr/local/Cellar/boost/1.58.0/lib/
+		  -L/usr/local/Cellar/boost/1.58.0/lib/ \
+		  -lboost_log -lboost_log-mt -lboost_log_setup-mt -lboost_log_setup
 
 
 #How the make tool find out the cpp and h file.
