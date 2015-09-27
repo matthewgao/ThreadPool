@@ -1,7 +1,10 @@
 CC=g++
-CFLAG= -g -Wall -std=c++11
+#CFLAG= -g -Wall -std=c++11 -DBOOST_LOG_DYN_LINK
+CFLAG= -g -Wall  
 LPTHREAD= -lpthread
-BOOST_LIB=-I/usr/local/Cellar/boost/1.58.0/include 
+BOOST_LIB=-I/usr/local/Cellar/boost/1.58.0/include \
+		  -L/usr/local/Cellar/boost/1.58.0/lib/
+
 
 #How the make tool find out the cpp and h file.
 #I didn't specify the route??
@@ -26,7 +29,7 @@ all : $(TARGET) $(TEST_TARGET)
 #$^ 会一次返回所有结果
 #$< 一次返回一个结果
 $(TARGET) : $(OBJS)
-	$(CC) $(CFLAG)  -o $@  $^ $(LPTHREAD)
+	$(CC) $(CFLAG)  -o $@  $^ $(LPTHREAD) $(BOOST_LIB)
 
 $(TEST_TARGET) : $(TEST_OBJS)
 	$(CC) $(CFLAG) $(BOOST_LIB) -o $@ $^

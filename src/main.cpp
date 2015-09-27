@@ -5,16 +5,25 @@
 #include "singleton.h"
 #include <iostream>
 #include <sstream>
+#include <boost/log/trivial.hpp>
+//#include <boost/log/core.hpp>
+//#include <boost/log/expressions.hpp>
 
 /*void *run(void *arg){*/
     //int *num = (int*)arg;
     //printf("Thread is %x,  Num %d \n", pthread_self(), *num);
 /*}*/
+namespace logging = boost::log;
+//#define BOOST_LOG_DYN_LINK 1
+
 void shutdown(ThreadPool* tp){
     tp->destoryPool();
 }
 
 int main(){
+    
+    BOOST_LOG_TRIVIAL(info)<<"Start----test----";
+
     Queue* q = Singleton<Queue>::getInstance();
     ThreadPool *tp = new ThreadPool();
     

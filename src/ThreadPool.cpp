@@ -1,6 +1,7 @@
 #include "ThreadPool.h"
 #include <iostream>
 #include "singleton.h"
+#include <signal.h>
 
 using namespace std;
  
@@ -69,14 +70,16 @@ void *thread_routine(void *arg)
                 pthread_cond_wait(cond, mtx->getRawMutexPtr());
             }     
         }   
+        if(*shutdown == true){	
+            pthread_exit((void*)"Thread exited");
+        }
+
         /*
          * Because this jobQueue is thread safe, so we don't need to 
          * protect it with another mutex
          */
         boost::shared_ptr<Job> job = jobQueue->popJob();
-        if(*shutdown == true){	
-            pthread_exit(NULL);
-        }
+        
         if(debuglevel >= 1){
             printf("%x is Runing\n", pthread_self());
         }      
@@ -118,7 +121,9 @@ void ThreadPool::destoryPool()
             /*
              * pthread_join will wait for the thread if it haven't exited.
              */
-            pthread_join(thread[i], NULL);
+            const char* status = NULL;
+            pthread_join(thread[i], (void**)&status);
+            cout<< status <<endl;
         }
         free(thread);
     }
