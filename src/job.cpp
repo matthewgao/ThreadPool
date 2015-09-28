@@ -8,21 +8,23 @@
 #include<iostream>
 #include<stdlib.h>
 #include"job.h"
+#include <boost/log/trivial.hpp>
 
 using namespace std;
+namespace logging = boost::log;
 
 Job::Job():args(NULL),
             name("default"){
-    cout<<"construct job "<<name<<endl;
+    BOOST_LOG_TRIVIAL(info)<<"Construct a job";
 }
 
 Job::~Job(){
-    cout<<"destruct job "<<name<<endl;
+    BOOST_LOG_TRIVIAL(info)<<"Destruct a job: "<<name;
 }
 
 void Job::process(){
     //abort();
-    cout<<"job process "<<name<<endl;
+    BOOST_LOG_TRIVIAL(info)<<"Processing a job "<<name;
 }
 
 void Job::setArgs(void* args){

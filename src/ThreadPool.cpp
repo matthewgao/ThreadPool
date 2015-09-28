@@ -2,8 +2,10 @@
 #include <iostream>
 #include "singleton.h"
 #include <signal.h>
+#include <boost/log/trivial.hpp>
 
 using namespace std;
+namespace logging = boost::log;
  
   
 ThreadPool::ThreadPool(){
@@ -25,7 +27,7 @@ void ThreadPool::init()
     thread = (pthread_t*)malloc(sizeof(pthread_t)*max_thread_num);
 
     if(NULL == thread){
-        printf("Create threads fail\n");
+        BOOST_LOG_TRIVIAL(error)<<"Create threads fail";
         return;
     }
 
@@ -48,25 +50,21 @@ void *thread_routine(void *arg)
     cond = tpool->getCond();
     shutdown = tpool->shouldShutdown();
 
-    if(debuglevel >= 2){
-        printf("Thread is %x, The cond is %x\n", pthread_self(), cond);
-        printf("Thread is %x, The mutex is %x\n", pthread_self(), mtx);
-        printf("Thread is %x, Tpool is %x\n", pthread_self(), tpool);
-    }
+    BOOST_LOG_TRIVIAL(debug)<<"thread is "
+        <<pthread_self()<<"cond is: "<<cond<<"mtx is:"
+        <<mtx->getRawMutexPtr()<<"Tpool is: "<<tpool;
 
     Queue* jobQueue = Singleton<Queue>::getInstance();
     
-    printf("thread_routine\n");
+    BOOST_LOG_TRIVIAL(info)<<"thread routine";
     while(false == (*shutdown)){
 
         {
             MutexGuard lock(*mtx);
             
             while(jobQueue->isEmpty() && (!*shutdown)){
-                if(debuglevel >= 0){
-                    printf("%x loop again \n",pthread_self());
-                }
-            
+                            
+                BOOST_LOG_TRIVIAL(info)<<"loop again";
                 pthread_cond_wait(cond, mtx->getRawMutexPtr());
             }     
         }   
@@ -80,23 +78,18 @@ void *thread_routine(void *arg)
          */
         boost::shared_ptr<Job> job = jobQueue->popJob();
         
-        if(debuglevel >= 1){
-            printf("%x is Runing\n", pthread_self());
-        }      
+        BOOST_LOG_TRIVIAL(info)<<pthread_self()<<" is running";
 
         if(NULL == job){
-            cout<<"Job is NULL"<<endl;
+            BOOST_LOG_TRIVIAL(error)<<pthread_self()<<" Job is NULL";
             continue;
         }
-        if(debuglevel >= 0){
-            printf("Got a Job, Thread is %x,\n", pthread_self());
-        }
+
+        BOOST_LOG_TRIVIAL(info)<<"Got a job, thread_id: "<<pthread_self();
 
         job->process();
       
-        if(debuglevel >= 1){
-            printf("%x is exiting\n", pthread_self());
-        }
+        BOOST_LOG_TRIVIAL(info)<<"Job done, thread_id: "<<pthread_self();
     }
     //never be here
     pthread_exit(NULL);
@@ -123,15 +116,13 @@ void ThreadPool::destoryPool()
              */
             const char* status = NULL;
             pthread_join(thread[i], (void**)&status);
-            cout<< status <<endl;
+            BOOST_LOG_TRIVIAL(info)<<"thread:  "<<thread[i]<<" exit with "<<status<<status;
         }
         free(thread);
     }
 
     thread = NULL;
-    if(debuglevel >= 1){
-        printf("free thread pool\n");
-    }
+    BOOST_LOG_TRIVIAL(info)<<"free thread pool ";
     
     pthread_cond_destroy(&cond);
 

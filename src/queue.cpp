@@ -5,10 +5,13 @@
  * Created Time: Sun Sep 20 15:58:20 2015
  */
 
-#include<iostream>
+#include <boost/log/trivial.hpp>
+#include <iostream>
 #include "queue.h"
 
+
 using namespace std;
+namespace logging = boost::log;
 
 Queue::Queue(){}
 
@@ -35,15 +38,15 @@ bool Queue::isEmpty(){
  */
 boost::shared_ptr<Job> Queue::popJob(){
     if(list.empty()){
-        cout<<"popJob: Empty list"<<endl;
+        BOOST_LOG_TRIVIAL(info)<<"PopJob: empty list";
         return boost::shared_ptr<Job>();
     }
     MutexGuard lock(mtx);
     //back() front()返回的是引用,这里做了一个转换,相当于用引用复制给了一个
     //新的变量tmp,引用计数+1
     boost::shared_ptr<Job> tmp = list.front();
-    cout<<"Popjob "<<tmp.use_count()<<endl;
+    BOOST_LOG_TRIVIAL(info)<<"Job Popped";
     list.pop_front(); 
-    cout<<"After Popjob "<<tmp.use_count()<<endl;
+    BOOST_LOG_TRIVIAL(info)<<"After pop a job the ref counting is: "<<tmp.use_count();
     return tmp;
 }

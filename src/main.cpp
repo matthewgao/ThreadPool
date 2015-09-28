@@ -14,27 +14,23 @@
     //printf("Thread is %x,  Num %d \n", pthread_self(), *num);
 /*}*/
 namespace logging = boost::log;
-//#define BOOST_LOG_DYN_LINK 1
 
-void shutdown(ThreadPool* tp){
-    tp->destoryPool();
-}
 
 int main(){
     
-    BOOST_LOG_TRIVIAL(info)<<"Start----test----";
+    BOOST_LOG_TRIVIAL(info)<<"---------main start-----------";
 
     Queue* q = Singleton<Queue>::getInstance();
     ThreadPool *tp = new ThreadPool();
     
     int i;
-    for(i = 100; i<110; i++){
+    for(i = 100; i<1100; i++){
         std::stringstream ss;
         ss<<i<<endl;
         
         boost::shared_ptr<Job> j1 = boost::make_shared<Job>();
         j1->setName(ss.str());
-        cout<<ss.str()<<endl;
+        //cout<<ss.str()<<endl;
         q->addJob(j1);
     }
 
@@ -47,7 +43,7 @@ int main(){
     q->addJob(j1);
     q->addJob(j2);
 
-    printf("MAIN::adding job\n");
+    BOOST_LOG_TRIVIAL(info)<<"main: job added, waiting to start";
     tp->startAll();
     //tp->start();
 
@@ -56,7 +52,7 @@ int main(){
     j2 = boost::shared_ptr<Job>();
 
     sleep(1000);
-    //tp->destoryPool();
+    tp->destoryPool();
     //pthread_exit(NULL);
     delete tp;
   
