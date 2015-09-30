@@ -1,8 +1,8 @@
-#include "ThreadPool.h"
 #include <iostream>
-#include "singleton.h"
 #include <signal.h>
 #include <boost/log/trivial.hpp>
+#include "ThreadPool.h"
+#include "singleton.h"
 
 using namespace std;
 namespace logging = boost::log;
@@ -37,8 +37,6 @@ void ThreadPool::init()
 
 }
 
-//this is a member function, pthread_create can not use a member 
-//function Not EVEN a static one.
 void *thread_routine(void *arg)
 {
     ThreadPool *tpool = (ThreadPool*)arg;
@@ -57,6 +55,7 @@ void *thread_routine(void *arg)
     Queue* jobQueue = Singleton<Queue>::getInstance();
     
     BOOST_LOG_TRIVIAL(info)<<"thread routine";
+
     while(false == (*shutdown)){
 
         {
@@ -116,7 +115,8 @@ void ThreadPool::destoryPool()
              */
             const char* status = NULL;
             pthread_join(thread[i], (void**)&status);
-            BOOST_LOG_TRIVIAL(info)<<"thread:  "<<thread[i]<<" exit with "<<status<<status;
+            BOOST_LOG_TRIVIAL(info)<<"thread:  "<<thread[i]<<
+                " exit with "<<status<<status;
         }
         free(thread);
     }

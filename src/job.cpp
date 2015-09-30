@@ -7,8 +7,8 @@
 
 #include<iostream>
 #include<stdlib.h>
-#include"job.h"
 #include <boost/log/trivial.hpp>
+#include"job.h"
 
 using namespace std;
 namespace logging = boost::log;

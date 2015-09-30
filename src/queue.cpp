@@ -5,8 +5,8 @@
  * Created Time: Sun Sep 20 15:58:20 2015
  */
 
-#include <boost/log/trivial.hpp>
 #include <iostream>
+#include <boost/log/trivial.hpp>
 #include "queue.h"
 
 
