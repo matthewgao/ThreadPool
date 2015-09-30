@@ -19,22 +19,44 @@ ThreadPool:: ~ThreadPool(){
 void ThreadPool::init()
 {
     
-    pthread_cond_init(&cond, NULL);
+    pthread_cond_init(&m_cond, NULL);
 
-    shutdown = false;
-    max_thread_num = 10;
+    m_shut_down = false;
+    m_max_thread_num = 10;
     
-    thread = (pthread_t*)malloc(sizeof(pthread_t)*max_thread_num);
+    m_thread = (pthread_t*)malloc(sizeof(pthread_t)*m_max_thread_num);
 
-    if(NULL == thread){
+    if(NULL == m_thread){
         BOOST_LOG_TRIVIAL(error)<<"Create threads fail";
         return;
     }
 
-    for(int i = 0; i<max_thread_num; i++){
-        pthread_create(&(thread[i]), NULL, thread_routine, (void*)this);    
+    for(int i = 0; i<m_max_thread_num; i++){
+        pthread_create(&(m_thread[i]), NULL, thread_routine, (void*)this);    
     }
 
+}
+
+bool ThreadPool::grow(int max_num){
+    //m_max_thread_num 
+    if(max_num <= m_max_thread_num){
+        BOOST_LOG_TRIVIAL(info)<<"ALREADY have "<<m_max_thread_num<<" threads, no needs to grow";
+        return true;
+    }
+    pthread_t * new_thread = (pthread_t*)malloc(sizeof(pthread_t)*max_num);
+    BOOST_LOG_TRIVIAL(info)<<"Growing threads to "<<max_num;
+    for(int i = m_max_thread_num; i < max_num; i++){
+        if(pthread_create(&(new_thread[i]), NULL, thread_routine, (void*)this)){
+            BOOST_LOG_TRIVIAL(error)<<"init thread fail: "<<i;
+            return false;
+        }    
+    }
+    memcpy(new_thread, m_thread, sizeof(pthread_t)*m_max_thread_num);
+    free(m_thread);
+    m_thread = new_thread;
+    m_max_thread_num = max_num;
+
+    return true;
 }
 
 void *thread_routine(void *arg)
@@ -66,7 +88,8 @@ void *thread_routine(void *arg)
                 BOOST_LOG_TRIVIAL(info)<<"loop again";
                 pthread_cond_wait(cond, mtx->getRawMutexPtr());
             }     
-        }   
+        }
+
         if(*shutdown == true){	
             pthread_exit((void*)"Thread exited");
         }
@@ -91,57 +114,57 @@ void *thread_routine(void *arg)
         BOOST_LOG_TRIVIAL(info)<<"Job done, thread_id: "<<pthread_self();
     }
     //never be here
-    pthread_exit(NULL);
+    pthread_exit((void*)"Unepected exit");
 }
 
 
 void ThreadPool::setMaxThread(int num)
 {
-    this->max_thread_num = num;
+    this->m_max_thread_num = num;
 
 }
 
 void ThreadPool::destoryPool()
 {
-    shutdown = true;
-    pthread_cond_broadcast(&cond);
-    printf("destroy pool\n");
+    m_shut_down = true;
+    pthread_cond_broadcast(&m_cond);
+    BOOST_LOG_TRIVIAL(info)<<"destroying pool";
     
-    if(thread != NULL){
-        for(int i = 0; i < max_thread_num; i++)
+    if(m_thread != NULL){
+        for(int i = 0; i < m_max_thread_num; i++)
         {
             /*
              * pthread_join will wait for the thread if it haven't exited.
              */
             const char* status = NULL;
-            pthread_join(thread[i], (void**)&status);
-            BOOST_LOG_TRIVIAL(info)<<"thread:  "<<thread[i]<<
+            pthread_join(m_thread[i], (void**)&status);
+            BOOST_LOG_TRIVIAL(info)<<"thread:  "<<m_thread[i]<<
                 " exit with "<<status<<status;
         }
-        free(thread);
+        free(m_thread);
     }
 
-    thread = NULL;
+    m_thread = NULL;
     BOOST_LOG_TRIVIAL(info)<<"free thread pool ";
     
-    pthread_cond_destroy(&cond);
+    pthread_cond_destroy(&m_cond);
 
 }
 
 MutexLock* ThreadPool::getMutex(){
-   return &mtx;
+   return &m_mtx;
 }
 pthread_cond_t* ThreadPool::getCond(){
-   return &cond;
+   return &m_cond;
 }
 bool *ThreadPool::shouldShutdown(){
-   return &shutdown;
+   return &m_shut_down;
 }
 
 void ThreadPool::start(){
-   pthread_cond_signal(&cond);
+   pthread_cond_signal(&m_cond);
 }
 
 void ThreadPool::startAll(){
-    pthread_cond_broadcast(&cond);
+    pthread_cond_broadcast(&m_cond);
 }

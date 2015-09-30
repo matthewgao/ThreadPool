@@ -18,11 +18,11 @@ class MutexLock;
 class ThreadPool{
 
   private:
-    bool shutdown;
-    int max_thread_num;
-    MutexLock mtx;
-    pthread_cond_t cond;
-    pthread_t *thread;
+    bool m_shut_down;
+    int m_max_thread_num;
+    MutexLock m_mtx;
+    pthread_cond_t m_cond;
+    pthread_t *m_thread;
     void init();
   public:
   //here is the other way to define the function,to pthread_create
@@ -38,5 +38,6 @@ class ThreadPool{
     MutexLock* getMutex();
     pthread_cond_t* getCond();
     bool *shouldShutdown();
+    bool grow(int);
 };
 #endif

@@ -17,6 +17,9 @@ int main(){
 
     Queue* q = Singleton<Queue>::getInstance();
     boost::shared_ptr<ThreadPool> tp = boost::make_shared<ThreadPool>();
+
+    tp->grow(15);
+    tp->grow(20);
     
     int i;
     for(i = 100; i<1100; i++){
@@ -25,7 +28,6 @@ int main(){
         
         boost::shared_ptr<Job> j1 = boost::make_shared<Job>();
         j1->setName(ss.str());
-        //cout<<ss.str()<<endl;
         BOOST_LOG_TRIVIAL(debug)<<"the job name: "<<ss.str();
         q->addJob(j1);
     }
