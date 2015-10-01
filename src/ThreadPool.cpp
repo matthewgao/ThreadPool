@@ -48,6 +48,7 @@ bool ThreadPool::grow(int max_num){
     for(int i = m_max_thread_num; i < max_num; i++){
         if(pthread_create(&(new_thread[i]), NULL, thread_routine, (void*)this)){
             BOOST_LOG_TRIVIAL(error)<<"init thread fail: "<<i;
+            free(new_thread);
             return false;
         }    
     }
