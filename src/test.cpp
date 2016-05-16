@@ -7,9 +7,9 @@
 
 #include<iostream>
 using namespace std;
-#include "job.h"
-#include "queue.h"
-#include "singleton.h"
+#include "lib/job.h"
+#include "lib/queue.h"
+#include "include/singleton.h"
 #include <boost/make_shared.hpp>
 
 void func(boost::shared_ptr<Job> j){

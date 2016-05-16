@@ -1,0 +1,2 @@
+/usr/bin/ar cr libtp.a  CMakeFiles/tp.dir/queue.cpp.o CMakeFiles/tp.dir/ThreadPool.cpp.o CMakeFiles/tp.dir/job.cpp.o
+/usr/bin/ranlib libtp.a

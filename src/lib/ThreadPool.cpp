@@ -1,8 +1,9 @@
 #include <iostream>
+#include <string.h>
 #include <signal.h>
 #include <boost/log/trivial.hpp>
 #include "ThreadPool.h"
-#include "singleton.h"
+#include "../include/singleton.h"
 
 using namespace std;
 namespace logging = boost::log;

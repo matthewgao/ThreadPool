@@ -7,7 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include <stdlib.h>
 #include "queue.h"
-#include "MutexLock.h"
+#include "../include/MutexLock.h"
 
 static int debuglevel = 0; //0 means no debug info
 

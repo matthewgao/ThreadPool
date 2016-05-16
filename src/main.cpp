@@ -3,9 +3,9 @@
 #include <sstream>
 #include <boost/log/trivial.hpp>
 #include <boost/make_shared.hpp>
-#include "ThreadPool.h"
-#include "singleton.h"
-#include "queue.h"
+#include "lib/ThreadPool.h"
+#include "include/singleton.h"
+#include "lib/queue.h"
 //#include <boost/log/core.hpp>
 //#include <boost/log/expressions.hpp>
 

@@ -18,7 +18,12 @@ There is two method to start the threads, one is start() it will start only one 
 
 Compile
 ==========
-Very easy to compile it, just make.
+Using Cmake
+
+~~~
+cmake .
+make
+~~~
 
 Example
 ==========
