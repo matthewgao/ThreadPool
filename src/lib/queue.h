@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include "job.h"
-#include "../include/MutexLock.h"
+#include "MutexLock.h"
 /*
  * shared_ptr now is a part of C++11, so you can use it 
  * directly with std::shared_ptr

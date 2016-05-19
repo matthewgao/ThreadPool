@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <boost/log/trivial.hpp>
 #include "ThreadPool.h"
-#include "../include/singleton.h"
+#include "singleton.h"
 
 using namespace std;
 namespace logging = boost::log;
